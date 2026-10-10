@@ -118,8 +118,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -129,13 +128,27 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh-token").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                        // Endpoints públicos de autenticação
+                        //.requestMatchers(HttpMethod.POST, "/auth/register", "/auth/login", "/auth/refresh-token" ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh-token" ).permitAll()
+
+                        // Documentação
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Console H2
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        // Somente administradores
+                        //.requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/register").hasRole("ADMIN")
+
+                        // Demais endpoints exigem autenticação
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
+
 }

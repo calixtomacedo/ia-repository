@@ -1,5 +1,6 @@
 package com.cmdev.atom.authentication.config;
 
+import com.cmdev.atom.authentication.domain.RolesEnum;
 import com.cmdev.atom.authentication.repository.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
                         now,
                         now
                 );
-                userDao.assignRole(adminId, "ROLE_ADMIN");
+                userDao.assignRole(adminId, RolesEnum.ROLE_ADMIN.name());
                 log.info("Usuário inicial criado com sucesso. ID: {}, Email: {}", adminId, adminEmail);
             }
         } catch (Exception e) {

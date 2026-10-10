@@ -89,7 +89,7 @@ paths:
         - Authentication
       summary: Realizar logout
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         '200':
           description: Logout realizado com sucesso
@@ -100,7 +100,7 @@ paths:
         - Users
       summary: Listar usuários
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         '200':
           description: Lista de usuários
@@ -117,7 +117,7 @@ paths:
         - Users
       summary: Buscar usuário por ID
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -140,7 +140,7 @@ paths:
         - Users
       summary: Atualizar usuário
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -167,7 +167,7 @@ paths:
         - Users
       summary: Excluir usuário
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path

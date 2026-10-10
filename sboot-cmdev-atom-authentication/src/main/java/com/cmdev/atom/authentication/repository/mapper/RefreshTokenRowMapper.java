@@ -18,14 +18,14 @@ public class RefreshTokenRowMapper implements RowMapper<RefreshToken> {
         Timestamp createdTs = rs.getTimestamp("created_at");
 
         return new RefreshToken(
-            rs.getLong("id"),
-            rs.getLong("user_id"),
-            rs.getString("token"),
-            issuedTs != null ? issuedTs.toInstant() : null,
-            expiresTs != null ? expiresTs.toInstant() : null,
-            rs.getBoolean("revoked"),
-            revokedTs != null ? revokedTs.toInstant() : null,
-            createdTs != null ? createdTs.toInstant() : null
+                rs.getLong("id"),
+                rs.getLong("user_id"),
+                rs.getString("token"),
+                issuedTs != null ? issuedTs.toInstant() : null,
+                expiresTs != null ? expiresTs.toInstant() : null,
+                rs.getBoolean("revoked"),
+                revokedTs != null ? revokedTs.toInstant() : null,
+                createdTs != null ? createdTs.toInstant() : null
         );
     }
 }

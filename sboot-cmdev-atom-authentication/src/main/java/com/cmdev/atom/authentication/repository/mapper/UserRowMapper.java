@@ -26,19 +26,19 @@ public class UserRowMapper implements RowMapper<User> {
         }
 
         return new User(
-            rs.getLong("id"),
-            rs.getString("uuid"),
-            rs.getString("name"),
-            rs.getString("email"),
-            rs.getString("password_hash"),
-            rs.getBoolean("enabled"),
-            rs.getBoolean("account_non_expired"),
-            rs.getBoolean("account_non_locked"),
-            rs.getBoolean("credentials_non_expired"),
-            lastLoginTs != null ? lastLoginTs.toInstant() : null,
-            createdTs != null ? createdTs.toInstant() : null,
-            updatedTs != null ? updatedTs.toInstant() : null,
-            role
+                rs.getLong("id"),
+                rs.getString("uuid"),
+                rs.getString("name"),
+                rs.getString("email"),
+                rs.getString("password_hash"),
+                rs.getBoolean("enabled"),
+                rs.getBoolean("account_non_expired"),
+                rs.getBoolean("account_non_locked"),
+                rs.getBoolean("credentials_non_expired"),
+                lastLoginTs != null ? lastLoginTs.toInstant() : null,
+                createdTs != null ? createdTs.toInstant() : null,
+                updatedTs != null ? updatedTs.toInstant() : null,
+                role
         );
     }
 }

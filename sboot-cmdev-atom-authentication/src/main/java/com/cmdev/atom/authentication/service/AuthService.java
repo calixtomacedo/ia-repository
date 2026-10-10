@@ -1,5 +1,6 @@
 package com.cmdev.atom.authentication.service;
 
+import com.cmdev.atom.authentication.domain.RolesEnum;
 import com.cmdev.atom.authentication.domain.dto.*;
 import com.cmdev.atom.authentication.domain.model.RefreshToken;
 import com.cmdev.atom.authentication.domain.model.User;
@@ -54,9 +55,9 @@ public class AuthService {
 
         Long newId = userDao.insert(uuid, request.name().trim(), normalizedEmail, encodedPassword, now, now);
 
-        userDao.assignRole(newId, "ROLE_USER");
+        userDao.assignRole(newId, RolesEnum.fromRole(request.isAdmin()).name());
 
-        User createdUser = new User(newId, uuid, request.name().trim(), normalizedEmail, encodedPassword, true, true, true, true, null, now, now, "ROLE_USER");
+        User createdUser = new User(newId, uuid, request.name().trim(), normalizedEmail, encodedPassword, true, true, true, true, null, now, now, RolesEnum.fromRole(request.isAdmin()).name());
 
         return UserResponse.fromUser(createdUser);
     }
