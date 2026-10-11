@@ -45,9 +45,9 @@ export class ApiExplorerComponent {
       category: 'auth',
       method: 'POST',
       path: '/auth/register',
-      summary: 'Cadastrar novo usuário (ROLE_USER)',
+      summary: 'Cadastrar novo usuário (permite flag opcional isAdmin)',
       authRequired: true,
-      defaultBody: JSON.stringify({ name: 'Maria Souza', email: 'maria.souza@empresa.com', password: 'Senha@123' }, null, 2)
+      defaultBody: JSON.stringify({ name: 'Maria Souza', email: 'maria.souza@empresa.com', password: 'Senha@123', isAdmin: false }, null, 2)
     },
     {
       id: 'refresh-token',

@@ -59,7 +59,8 @@ export class UserListComponent implements OnInit {
   createForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    isAdmin: [false]
   });
 
   ngOnInit(): void {
@@ -114,7 +115,7 @@ export class UserListComponent implements OnInit {
 
   // Create Handlers
   openCreateModal(): void {
-    this.createForm.reset();
+    this.createForm.reset({ isAdmin: false });
     this.isCreateModalOpen.set(true);
   }
 
@@ -129,7 +130,8 @@ export class UserListComponent implements OnInit {
     }
 
     this.isCreating.set(true);
-    this.authService.register(this.createForm.value).subscribe({
+    const { name, email, password, isAdmin } = this.createForm.value;
+    this.authService.register({ name, email, password, isAdmin: Boolean(isAdmin) }).subscribe({
       next: (created) => {
         this.isCreating.set(false);
         this.isCreateModalOpen.set(false);

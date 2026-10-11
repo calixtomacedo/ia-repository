@@ -21,13 +21,13 @@
                 </div>
                 <h4 class="fw-bold text-dark">Cadastro Realizado com Sucesso!</h4>
                 <p class="text-muted small mb-4">
-                  O usuário foi registrado na base de dados com perfil padrão <code>ROLE_USER</code>.
+                  O usuário foi registrado na base de dados com perfil <code>{{ registeredRole }}</code>.
                 </p>
                 <div class="d-flex justify-content-center gap-2">
                   <button class="btn btn-primary px-4" (click)="goToLogin()">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Ir para o Login
                   </button>
-                  <button class="btn btn-outline-secondary px-4" (click)="registrationSuccess = false; registerForm.reset()">
+                  <button class="btn btn-outline-secondary px-4" (click)="registrationSuccess = false; registerForm.reset({ isAdmin: false })">
                     Cadastrar Outro
                   </button>
                 </div>
@@ -44,7 +44,7 @@
               } @else if (authService.isAdmin()) {
                 <div class="alert alert-success border small d-flex align-items-center gap-2 mb-4">
                   <i class="bi bi-shield-check text-success flex-shrink-0"></i>
-                  <div>Você está autenticado como <strong>ADMIN</strong>. Novo usuário receberá role <code>ROLE_USER</code>.</div>
+                  <div>Você está autenticado como <strong>ADMIN</strong>. Você pode definir os privilégios do novo usuário abaixo.</div>
                 </div>
               }
 
@@ -130,7 +130,7 @@
                 </div>
 
                 <!-- Confirm Password Field -->
-                <div class="mb-4">
+                <div class="mb-3">
                   <label for="confirmPassword" class="form-label small fw-semibold">Confirmação de Senha</label>
                   <div class="input-group">
                     <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
@@ -148,6 +148,26 @@
                       As senhas não coincidem.
                     </div>
                   }
+                </div>
+
+                <!-- Admin Role Switch Field -->
+                <div class="mb-4 p-3 bg-light rounded border">
+                  <div class="form-check form-switch d-flex align-items-center gap-2 mb-0">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="isAdmin"
+                      formControlName="isAdmin"
+                    />
+                    <label class="form-check-label fw-semibold mb-0" for="isAdmin">
+                      <i class="bi bi-shield-lock-fill text-primary me-1"></i>
+                      Privilégios de Administrador (<code>ROLE_ADMIN</code>)
+                    </label>
+                  </div>
+                  <div class="form-text text-muted small mt-1 ms-4 ps-2">
+                    Campo opcional <code>isAdmin</code>. Se ativado, o usuário receberá perfil de administrador; se desmarcado, será cadastrado como <code>ROLE_USER</code>.
+                  </div>
                 </div>
 
                 <!-- Submit Button -->

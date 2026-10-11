@@ -22,7 +22,7 @@ Todas as operações especificadas no contrato `openapi.yaml` e documentadas no 
 | Método | Endpoint | Descrição no Backend | Tela / Rota no Frontend |
 |---|---|---|---|
 | `POST` | `/api/auth/login` | Realizar login e obter tokens JWT | `/login` (com preenchimento automático para o admin inicial) |
-| `POST` | `/api/auth/register` | Cadastrar novo usuário (`ROLE_USER`) | `/register` e Modal "Novo Usuário" em `/users` |
+| `POST` | `/api/auth/register` | Cadastrar novo usuário (permite flag opcional `isAdmin` para `ROLE_ADMIN` / `ROLE_USER`) | `/register` e Modal "Novo Usuário" em `/users` |
 | `POST` | `/api/auth/refresh-token` | Renovar tokens JWT expirados | `/tokens` (com botão de renovação sob demanda e interceptor automático) |
 | `POST` | `/api/auth/logout` | Revogar tokens na blacklist e logout | Navbar, Menu de Perfil e Painel de Tokens |
 | `GET` | `/api/users` | Listar todos os usuários cadastrados | `/users` e Painel Resumo em `/dashboard` |

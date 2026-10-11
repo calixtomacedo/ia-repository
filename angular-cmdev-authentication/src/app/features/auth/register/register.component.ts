@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validatio
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { RegisterRequest } from '../../../core/models/auth.model';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -31,13 +32,15 @@ export class RegisterComponent {
     name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    confirmPassword: ['', [Validators.required]]
+    confirmPassword: ['', [Validators.required]],
+    isAdmin: [false]
   }, { validators: passwordMatchValidator });
 
   isLoading = false;
   showPassword = false;
   errorMessage: string | null = null;
   registrationSuccess = false;
+  registeredRole = 'ROLE_USER';
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -52,11 +55,19 @@ export class RegisterComponent {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const { name, email, password } = this.registerForm.value;
+    const { name, email, password, isAdmin } = this.registerForm.value;
 
-    this.authService.register({ name, email, password }).subscribe({
+    const payload: RegisterRequest = {
+      name,
+      email,
+      password,
+      isAdmin: Boolean(isAdmin)
+    };
+
+    this.authService.register(payload).subscribe({
       next: () => {
         this.isLoading = false;
+        this.registeredRole = isAdmin ? 'ROLE_ADMIN' : 'ROLE_USER';
         this.registrationSuccess = true;
       },
       error: (err) => {
