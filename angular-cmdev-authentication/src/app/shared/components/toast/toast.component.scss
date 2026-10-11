@@ -1,0 +1,18 @@
+.toast {
+  min-width: 280px;
+  max-width: 420px;
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

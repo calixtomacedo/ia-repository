@@ -1,0 +1,130 @@
+<div class="auth-wrapper d-flex align-items-center justify-content-center py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-5">
+        <div class="card shadow-lg border-0 overflow-hidden">
+          <!-- Card Header Banner -->
+          <div class="bg-gradient-primary text-white p-4 text-center">
+            <div class="auth-icon mb-3 mx-auto">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Bem-vindo de volta!</h3>
+            <p class="text-white-50 mb-0 small">Acesse sua conta para gerenciar usuários e autenticação</p>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-4 p-md-5">
+            <!-- Quick Helper / Admin autofill -->
+            <div class="alert alert-light border d-flex align-items-center justify-content-between p-2 mb-4">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-key text-warning fs-5"></i>
+                <div class="small">
+                  <span class="text-muted">Usuário Admin padrão:</span>
+                  <div class="fw-semibold font-monospace" style="font-size: 0.75rem;">admin&#64;empresa.com / Admin&#64;123</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-primary"
+                (click)="fillAdminCredentials()"
+                title="Preencher com credenciais do admin"
+              >
+                Preencher
+              </button>
+            </div>
+
+            <!-- Error Banner -->
+            @if (errorMessage) {
+              <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 small" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>{{ errorMessage }}</div>
+              </div>
+            }
+
+            <!-- Form -->
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="email" class="form-label small fw-semibold">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="seu.email@empresa.com"
+                    [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+                  />
+                </div>
+                @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+                  <div class="text-danger small mt-1">
+                    @if (loginForm.get('email')?.hasError('required')) {
+                      O email é obrigatório.
+                    } @else if (loginForm.get('email')?.hasError('email')) {
+                      Informe um email válido.
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label for="password" class="form-label small fw-semibold mb-0">Senha</label>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    id="password"
+                    class="form-control"
+                    formControlName="password"
+                    placeholder="Sua senha"
+                    [class.is-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-light border text-muted"
+                    (click)="togglePasswordVisibility()"
+                    tabindex="-1"
+                  >
+                    <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  </button>
+                </div>
+                @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+                  <div class="text-danger small mt-1">
+                    A senha é obrigatória.
+                  </div>
+                }
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                class="btn btn-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                [disabled]="isLoading"
+              >
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span>Autenticando...</span>
+                } @else {
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  <span>Entrar no Sistema</span>
+                }
+              </button>
+            </form>
+
+            <!-- Register Link -->
+            <div class="text-center mt-4 pt-2 border-top">
+              <span class="text-muted small">Não possui uma conta? </span>
+              <a routerLink="/register" class="small fw-semibold text-primary text-decoration-none">
+                Cadastrar-se agora
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

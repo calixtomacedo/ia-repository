@@ -1,0 +1,26 @@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;">
+  @for (toast of notificationService.toasts(); track toast.id) {
+    <div
+      class="toast show align-items-center text-white border-0 mb-2 shadow-lg"
+      [ngClass]="'bg-' + toast.type"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          @if (toast.title) {
+            <strong class="d-block mb-1">{{ toast.title }}</strong>
+          }
+          <span>{{ toast.message }}</span>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          aria-label="Fechar"
+          (click)="notificationService.remove(toast.id)"
+        ></button>
+      </div>
+    </div>
+  }
+</div>

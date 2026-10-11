@@ -1,0 +1,182 @@
+<div class="auth-wrapper d-flex align-items-center justify-content-center py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-9 col-lg-6">
+        <div class="card shadow-lg border-0 overflow-hidden">
+          <!-- Card Header Banner -->
+          <div class="bg-gradient-primary text-white p-4 text-center">
+            <div class="auth-icon mb-3 mx-auto">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Criar Nova Conta</h3>
+            <p class="text-white-50 mb-0 small">Cadastre um novo usuário no microserviço de autenticação</p>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-4 p-md-5">
+            @if (registrationSuccess) {
+              <div class="text-center py-4">
+                <div class="text-success fs-1 mb-3">
+                  <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h4 class="fw-bold text-dark">Cadastro Realizado com Sucesso!</h4>
+                <p class="text-muted small mb-4">
+                  O usuário foi registrado na base de dados com perfil padrão <code>ROLE_USER</code>.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-primary px-4" (click)="goToLogin()">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Ir para o Login
+                  </button>
+                  <button class="btn btn-outline-secondary px-4" (click)="registrationSuccess = false; registerForm.reset()">
+                    Cadastrar Outro
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <!-- Security Notice Banner -->
+              @if (!authService.isAuthenticated()) {
+                <div class="alert alert-info border small d-flex align-items-start gap-2 mb-4">
+                  <i class="bi bi-info-circle-fill text-info mt-1 flex-shrink-0"></i>
+                  <div>
+                    <strong>Nota da API:</strong> O backend pode exigir permissão de Administrador (<code>ROLE_ADMIN</code>) para criar usuários. Se necessário, faça login primeiro com a conta de Administrador.
+                  </div>
+                </div>
+              } @else if (authService.isAdmin()) {
+                <div class="alert alert-success border small d-flex align-items-center gap-2 mb-4">
+                  <i class="bi bi-shield-check text-success flex-shrink-0"></i>
+                  <div>Você está autenticado como <strong>ADMIN</strong>. Novo usuário receberá role <code>ROLE_USER</code>.</div>
+                </div>
+              }
+
+              <!-- Error Message -->
+              @if (errorMessage) {
+                <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 small" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                  <div>{{ errorMessage }}</div>
+                </div>
+              }
+
+              <!-- Form -->
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <!-- Name Field -->
+                <div class="mb-3">
+                  <label for="name" class="form-label small fw-semibold">Nome Completo</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                    <input
+                      type="text"
+                      id="name"
+                      class="form-control"
+                      formControlName="name"
+                      placeholder="Ex: João da Silva"
+                      [class.is-invalid]="registerForm.get('name')?.touched && registerForm.get('name')?.invalid"
+                    />
+                  </div>
+                  @if (registerForm.get('name')?.touched && registerForm.get('name')?.invalid) {
+                    <div class="text-danger small mt-1">
+                      O nome deve ter entre 2 e 255 caracteres.
+                    </div>
+                  }
+                </div>
+
+                <!-- Email Field -->
+                <div class="mb-3">
+                  <label for="email" class="form-label small fw-semibold">Email Corporativo / Pessoal</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                    <input
+                      type="email"
+                      id="email"
+                      class="form-control"
+                      formControlName="email"
+                      placeholder="joao.silva@empresa.com"
+                      [class.is-invalid]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+                    />
+                  </div>
+                  @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+                    <div class="text-danger small mt-1">
+                      Informe um email válido.
+                    </div>
+                  }
+                </div>
+
+                <!-- Password Field -->
+                <div class="mb-3">
+                  <label for="password" class="form-label small fw-semibold">Senha</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      id="password"
+                      class="form-control"
+                      formControlName="password"
+                      placeholder="Mínimo de 6 caracteres"
+                      [class.is-invalid]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-light border text-muted"
+                      (click)="togglePasswordVisibility()"
+                      tabindex="-1"
+                    >
+                      <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                    </button>
+                  </div>
+                  @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+                    <div class="text-danger small mt-1">
+                      A senha deve conter no mínimo 6 caracteres.
+                    </div>
+                  }
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="mb-4">
+                  <label for="confirmPassword" class="form-label small fw-semibold">Confirmação de Senha</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-lock"></i></span>
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      id="confirmPassword"
+                      class="form-control"
+                      formControlName="confirmPassword"
+                      placeholder="Repita a senha"
+                      [class.is-invalid]="registerForm.get('confirmPassword')?.touched && (registerForm.get('confirmPassword')?.invalid || registerForm.hasError('passwordMismatch'))"
+                    />
+                  </div>
+                  @if (registerForm.get('confirmPassword')?.touched && registerForm.hasError('passwordMismatch')) {
+                    <div class="text-danger small mt-1">
+                      As senhas não coincidem.
+                    </div>
+                  }
+                </div>
+
+                <!-- Submit Button -->
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2"
+                  [disabled]="isLoading"
+                >
+                  @if (isLoading) {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>Processando Cadastro...</span>
+                  } @else {
+                    <i class="bi bi-person-check-fill"></i>
+                    <span>Cadastrar Usuário (POST /api/auth/register)</span>
+                  }
+                </button>
+              </form>
+
+              <!-- Login Link -->
+              <div class="text-center mt-4 pt-2 border-top">
+                <span class="text-muted small">Já possui conta cadastrada? </span>
+                <a routerLink="/login" class="small fw-semibold text-primary text-decoration-none">
+                  Fazer login
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

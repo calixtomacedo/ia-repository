@@ -1,0 +1,215 @@
+<div class="container-fluid px-lg-4 py-4">
+  <!-- Page Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold text-dark mb-1">
+        <i class="bi bi-lightning-charge-fill text-warning me-2"></i>API Explorer Interativo
+      </h2>
+      <p class="text-muted small mb-0">
+        Ambiente de teste e visualização direta de todos os 8 endpoints do projeto <code>sboot-cmdev-atom-authentication</code>
+      </p>
+    </div>
+
+    <!-- Active Token Status -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge" [ngClass]="authService.isAuthenticated() ? 'bg-success' : 'bg-secondary'">
+        <i class="bi" [ngClass]="authService.isAuthenticated() ? 'bi-shield-check' : 'bi-shield-slash'"></i>
+        {{ authService.isAuthenticated() ? 'Bearer Token Ativo' : 'Sessão Anônima' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Endpoints Menu -->
+    <div class="col-12 col-lg-4 col-xl-3">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+        <div class="card-header bg-white py-3">
+          <h6 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-list-ul me-1"></i> Endpoints Disponíveis
+          </h6>
+        </div>
+        <div class="list-group list-group-flush p-2">
+          <!-- Auth Category -->
+          <div class="px-2 py-1 text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">
+            Autenticação (/api/auth)
+          </div>
+          @for (ep of endpoints.slice(0, 4); track ep.id) {
+            <button
+              type="button"
+              class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center justify-content-between mb-1 py-2 px-3"
+              [class.active]="selectedEndpoint().id === ep.id"
+              (click)="selectEndpoint(ep)"
+            >
+              <div class="text-truncate me-2">
+                <span
+                  class="badge me-1 font-monospace"
+                  [ngClass]="ep.method === 'GET' ? 'bg-success' : (ep.method === 'POST' ? 'bg-primary' : (ep.method === 'PUT' ? 'bg-warning text-dark' : 'bg-danger'))"
+                  style="font-size: 0.7rem;"
+                >
+                  {{ ep.method }}
+                </span>
+                <span class="small font-monospace">{{ ep.path }}</span>
+              </div>
+              @if (ep.authRequired) {
+                <i class="bi bi-lock-fill text-muted" style="font-size: 0.75rem;" title="Requer Bearer Token"></i>
+              }
+            </button>
+          }
+
+          <!-- Users Category -->
+          <div class="px-2 pt-3 pb-1 text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">
+            Usuários (/api/users)
+          </div>
+          @for (ep of endpoints.slice(4); track ep.id) {
+            <button
+              type="button"
+              class="list-group-item list-group-item-action border-0 rounded d-flex align-items-center justify-content-between mb-1 py-2 px-3"
+              [class.active]="selectedEndpoint().id === ep.id"
+              (click)="selectEndpoint(ep)"
+            >
+              <div class="text-truncate me-2">
+                <span
+                  class="badge me-1 font-monospace"
+                  [ngClass]="ep.method === 'GET' ? 'bg-success' : (ep.method === 'POST' ? 'bg-primary' : (ep.method === 'PUT' ? 'bg-warning text-dark' : 'bg-danger'))"
+                  style="font-size: 0.7rem;"
+                >
+                  {{ ep.method }}
+                </span>
+                <span class="small font-monospace">{{ ep.path }}</span>
+              </div>
+              @if (ep.authRequired) {
+                <i class="bi bi-lock-fill text-muted" style="font-size: 0.75rem;" title="Requer Bearer Token"></i>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Request Runner & Response Viewer -->
+    <div class="col-12 col-lg-8 col-xl-9">
+      <!-- Request Config Card -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span
+              class="badge px-3 py-2 font-monospace fs-6"
+              [ngClass]="selectedEndpoint().method === 'GET' ? 'bg-success' : (selectedEndpoint().method === 'POST' ? 'bg-primary' : (selectedEndpoint().method === 'PUT' ? 'bg-warning text-dark' : 'bg-danger'))"
+            >
+              {{ selectedEndpoint().method }}
+            </span>
+            <span class="fw-bold font-monospace fs-5 text-dark">{{ selectedEndpoint().path }}</span>
+          </div>
+
+          <button
+            class="btn btn-primary d-flex align-items-center gap-2 px-4"
+            (click)="executeRequest()"
+            [disabled]="isExecuting()"
+          >
+            @if (isExecuting()) {
+              <span class="spinner-border spinner-border-sm"></span>
+              <span>Executando...</span>
+            } @else {
+              <i class="bi bi-play-fill fs-5"></i>
+              <span>Disparar Requisição</span>
+            }
+          </button>
+        </div>
+
+        <div class="card-body p-4">
+          <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle me-1"></i> {{ selectedEndpoint().summary }}
+          </p>
+
+          <!-- Path Parameter if any -->
+          @if (selectedEndpoint().hasPathParam) {
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">
+                Parâmetro da URL <code>[{{ selectedEndpoint().pathParamName }}]</code>:
+              </label>
+              <div class="input-group" style="max-width: 280px;">
+                <span class="input-group-text bg-light font-monospace small">id</span>
+                <input
+                  type="text"
+                  class="form-control font-monospace"
+                  [ngModel]="pathParamValue()"
+                  (ngModelChange)="onPathParamChange($event)"
+                  placeholder="Ex: 1"
+                />
+              </div>
+            </div>
+          }
+
+          <!-- Request Body if POST/PUT -->
+          @if (selectedEndpoint().method === 'POST' || selectedEndpoint().method === 'PUT') {
+            <div class="mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small fw-semibold mb-0">Corpo da Requisição (JSON Payload):</label>
+                <button
+                  class="btn btn-link btn-sm p-0 text-decoration-none small"
+                  (click)="requestBody.set(selectedEndpoint().defaultBody || '')"
+                >
+                  Restaurar Exemplo
+                </button>
+              </div>
+              <textarea
+                class="form-control font-monospace code-editor"
+                rows="5"
+                [ngModel]="requestBody()"
+                (ngModelChange)="requestBody.set($event)"
+              ></textarea>
+            </div>
+          }
+
+          <!-- Target Full URL Info -->
+          <div class="bg-light p-2 rounded mt-3 font-monospace small text-muted d-flex align-items-center gap-2">
+            <i class="bi bi-link-45deg fs-5 text-primary"></i>
+            <span>URL Completa: <code>{{ fullRequestUrl() }}</code></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Card -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+          <div class="fw-bold text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-return-right text-success fs-5"></i>
+            <span>Resposta do Backend (HTTP Response)</span>
+          </div>
+
+          @if (responseStatus() !== null) {
+            <div class="d-flex align-items-center gap-2">
+              <span
+                class="badge px-3 py-2 font-monospace"
+                [ngClass]="responseStatus()! >= 200 && responseStatus()! < 300 ? 'bg-success' : (responseStatus()! >= 400 && responseStatus()! < 500 ? 'bg-warning text-dark' : 'bg-danger')"
+              >
+                Status: {{ responseStatus() }}
+              </span>
+              @if (responseTimeMs()) {
+                <span class="badge bg-light text-muted border font-monospace">
+                  <i class="bi bi-clock me-1"></i>{{ responseTimeMs() }} ms
+                </span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="card-body p-4">
+          @if (isExecuting()) {
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary mb-2" role="status"></div>
+              <div class="text-muted small">Aguardando resposta do servidor em <code>{{ configService.apiUrl() }}</code>...</div>
+            </div>
+          } @else if (responseBody() !== null) {
+            <pre class="code-block mb-0" style="max-height: 400px;">{{ responseBody() }}</pre>
+          } @else {
+            <div class="text-center py-5 text-muted">
+              <i class="bi bi-send fs-1 mb-2 d-block text-secondary"></i>
+              Clique em <strong>"Disparar Requisição"</strong> para testar a chamada ao endpoint.
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

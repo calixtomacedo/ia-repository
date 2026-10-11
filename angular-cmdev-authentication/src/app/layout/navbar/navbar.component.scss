@@ -1,0 +1,30 @@
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--primary-gradient);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.avatar-sm {
+  font-size: 1.25rem;
+  color: #93c5fd;
+}
+
+.nav-link {
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+
+  &:hover {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &.active {
+    color: #fff !important;
+    background: rgba(99, 102, 241, 0.25);
+    font-weight: 600;
+  }
+}

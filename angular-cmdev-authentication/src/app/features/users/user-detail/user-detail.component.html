@@ -1,0 +1,140 @@
+<div class="container py-4">
+  <!-- Back Button & Title -->
+  <div class="mb-4">
+    <a routerLink="/users" class="btn btn-outline-secondary btn-sm mb-3">
+      <i class="bi bi-arrow-left me-1"></i> Voltar para a Lista de Usuários
+    </a>
+    <h2 class="fw-bold text-dark mb-1">
+      <i class="bi bi-person-badge text-primary me-2"></i>Detalhes do Usuário
+    </h2>
+    <p class="text-muted small mb-0">Endpoint: <code>GET /api/users/&#123;id&#125;</code></p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="card shadow-sm border-0 p-5 text-center">
+      <div class="spinner-border text-primary mx-auto mb-3" role="status"></div>
+      <div class="text-muted">Buscando detalhes do usuário...</div>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="card shadow-sm border-0 p-5 text-center">
+      <i class="bi bi-person-x text-danger fs-1 mb-3"></i>
+      <h4 class="fw-bold text-dark">Usuário Não Encontrado</h4>
+      <p class="text-muted mb-4">{{ errorMessage() }}</p>
+      <a routerLink="/users" class="btn btn-primary mx-auto">Voltar para a Lista</a>
+    </div>
+  } @else if (user()) {
+    <div class="row g-4 justify-content-center">
+      <!-- Profile Card -->
+      <div class="col-12 col-lg-8">
+        <div class="card shadow-sm border-0 overflow-hidden">
+          <div class="bg-gradient-primary p-4 text-white d-flex align-items-center gap-4">
+            <div class="detail-avatar bg-white text-primary fw-bold shadow">
+              {{ user()?.name?.charAt(0)?.toUpperCase() }}
+            </div>
+            <div>
+              <div class="badge bg-white bg-opacity-25 mb-1">ID #{{ user()?.id }}</div>
+              <h3 class="fw-bold mb-1">{{ user()?.name }}</h3>
+              <div class="text-white-50 small">{{ user()?.email }}</div>
+            </div>
+          </div>
+
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-uppercase text-muted small mb-3">Informações da Conta</h6>
+
+            <div class="row g-3">
+              <!-- Name Field -->
+              <div class="col-sm-6">
+                <div class="p-3 bg-light rounded">
+                  <div class="text-muted small">Nome Completo</div>
+                  <div class="fw-semibold text-dark fs-6">{{ user()?.name }}</div>
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="col-sm-6">
+                <div class="p-3 bg-light rounded">
+                  <div class="text-muted small">Endereço de E-mail</div>
+                  <div class="fw-semibold text-dark fs-6">{{ user()?.email }}</div>
+                </div>
+              </div>
+
+              <!-- Role Field -->
+              <div class="col-sm-6">
+                <div class="p-3 bg-light rounded">
+                  <div class="text-muted small mb-1">Perfil de Acesso</div>
+                  <span
+                    class="badge px-3 py-2 fs-6"
+                    [ngClass]="user()?.role === 'ADMIN' || user()?.role === 'ROLE_ADMIN' ? 'badge-role-admin' : 'badge-role-user'"
+                  >
+                    <i class="bi" [ngClass]="user()?.role === 'ADMIN' || user()?.role === 'ROLE_ADMIN' ? 'bi-shield-shaded me-1' : 'bi-person me-1'"></i>
+                    {{ user()?.role }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Created At Field -->
+              <div class="col-sm-6">
+                <div class="p-3 bg-light rounded">
+                  <div class="text-muted small">Cadastrado em</div>
+                  <div class="fw-semibold text-dark fs-6">
+                    {{ user()?.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-4 pt-4 border-top">
+              <a routerLink="/users" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Voltar
+              </a>
+
+              <div class="d-flex gap-2">
+                <a [routerLink]="['/users', user()?.id, 'edit']" class="btn btn-primary d-flex align-items-center gap-2">
+                  <i class="bi bi-pencil"></i>
+                  <span>Editar Usuário (PUT)</span>
+                </a>
+
+                <button class="btn btn-outline-danger d-flex align-items-center gap-2" (click)="showDeleteModal.set(true)">
+                  <i class="bi bi-trash"></i>
+                  <span>Excluir (DELETE)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal de Exclusão -->
+@if (showDeleteModal()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal fade show d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title fw-bold">Excluir Usuário #{{ user()?.id }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="showDeleteModal.set(false)"></button>
+        </div>
+        <div class="modal-body p-4">
+          <p>Tem certeza de que deseja remover permanentemente o usuário <strong>{{ user()?.name }}</strong>?</p>
+          <div class="alert alert-warning small mb-0">
+            Esta operação chamará o endpoint <code>DELETE /api/users/{{ user()?.id }}</code>.
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" (click)="showDeleteModal.set(false)" [disabled]="isDeleting()">Cancelar</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="isDeleting()">
+            @if (isDeleting()) {
+              <span class="spinner-border spinner-border-sm me-1"></span> Excluindo...
+            } @else {
+              Confirmar Exclusão
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
