@@ -222,6 +222,9 @@ components:
           type: string
           format: password
           example: Senha@123
+        isAdmin:
+          type: boolean
+          example: true
 
     UpdateUserRequest:
       type: object
